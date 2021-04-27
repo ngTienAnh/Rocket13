@@ -46,8 +46,8 @@ CREATE TABLE GroupAccount (
 	GroupID 			TINYINT UNSIGNED NOT NULL,
     AccountID 			TINYINT UNSIGNED  NOT NULL,
     JoinDate 			DATETIME DEFAULT NOW(),
-    PRIMARY KEY (GroupID,AccountID),
-    FOREIGN KEY(GroupID) REFERENCES `Group`(GroupID) 
+    CONSTRAINT pk_GroupAccount_GroupID_AccountID PRIMARY KEY (GroupID,AccountID),
+    CONSTRAINT fk_GroupAccount_GroupID FOREIGN KEY(GroupID) REFERENCES `Group`(GroupID) 
 );
 
 -- tạo bảng TypeQuestion
@@ -73,9 +73,9 @@ CREATE TABLE Question (
     TypeID 				TINYINT UNSIGNED,
     CreatorID 			TINYINT UNSIGNED NOT NULL,
     CreateDate 			DATETIME DEFAULT NOW(),
-    FOREIGN KEY(CategoryID) REFERENCES CategoryQuestion(CategoryID),
-    FOREIGN KEY(TypeID) REFERENCES TypeQuestion(TypeID),
-    FOREIGN KEY (CreatorID) REFERENCES Account(AccountID)
+    CONSTRAINT fk_Question_CategoryID FOREIGN KEY(CategoryID) REFERENCES CategoryQuestion(CategoryID),
+    CONSTRAINT fk_Question_TypeID FOREIGN KEY(TypeID) REFERENCES TypeQuestion(TypeID),
+    CONSTRAINT fk_Question_CreatorID FOREIGN KEY (CreatorID) REFERENCES Account(AccountID)
 );
 
 -- tạo bảng Answer
@@ -85,7 +85,7 @@ CREATE TABLE Answer (
     Content 			NVARCHAR(200) NOT NULL,
     QuestionID 			TINYINT UNSIGNED NOT NULL,
     isCorrect 			ENUM('Đúng','Sai'),
-    FOREIGN KEY(QuestionID) REFERENCES Question(QuestionID)
+    CONSTRAINT fk_Answer_QuestionID FOREIGN KEY(QuestionID) REFERENCES Question(QuestionID)
 );
 -- tạo bảng Exam
 DROP TABLE IF EXISTS  Exam;
@@ -97,8 +97,8 @@ CREATE TABLE Exam (
     Duration 			TINYINT UNSIGNED NOT NULL,
 	CreatorID 			TINYINT UNSIGNED,
 	CreateDate 			DATETIME DEFAULT NOW(),
-    FOREIGN KEY(CategoryID) REFERENCES CategoryQuestion(CategoryID),
-    FOREIGN KEY (CreatorID) REFERENCES `Account`(AccountID)
+    CONSTRAINT fk_Exam_CategoryID FOREIGN KEY(CategoryID) REFERENCES CategoryQuestion(CategoryID),
+    CONSTRAINT fk_Exam_CreatorID FOREIGN KEY (CreatorID) REFERENCES `Account`(AccountID)
 );
 
 -- tạo bảng ExamQuestion
@@ -107,8 +107,8 @@ CREATE TABLE ExamQuestion (
 	ExamID 				TINYINT UNSIGNED AUTO_INCREMENT,
     QuestionID  	 	TINYINT UNSIGNED NOT NULL,
     PRIMARY KEY(ExamID,QuestionID),
-    FOREIGN KEY(QuestionID) REFERENCES Question(QuestionID),
-    FOREIGN KEY (ExamID) REFERENCES Exam(ExamID)
+    CONSTRAINT fk_ExamQuestion_QuestionID FOREIGN KEY(QuestionID) REFERENCES Question(QuestionID),
+    CONSTRAINT fk_ExamQuestion_ExamID FOREIGN KEY (ExamID) REFERENCES Exam(ExamID)
 );
 
 -- INSERT dữ liệu vào bảng Department
@@ -144,6 +144,9 @@ SELECT * FROM Position;
 -- INSERT dữ liệu vào bảng Account
 INSERT INTO `Account`(Email,Username,FullName,DepartmentID,PositionID)
 VALUE 		
+			(N'ngtienanh99@gmail.com',N'boil2anhlung',N'Nguyễn Tiến Anh',3,2),
+            (N'ngtienanh98@gmail.com',N'boil2anhlungG',N'Nguyễn Tiến Anh',3,1),
+            (N'ngbaotrung@gmail.com',N'abcnoname',N'Nguyễn Bảo Trung',2,3),
 			(N'ngtienanh@gmail.com',N'boilanhlung',N'Nguyễn Tiến Anh',1,2),
             (N'ngbaotrung@gmail.com',N'abcnoname',N'Nguyễn Bảo Trung',2,3),
             (N'haohaoh@gmail.com',N'mianlien',N'Trần Hảo Hảo',3,4),
@@ -235,7 +238,10 @@ VALUE
             (N'Angular được phát triển từ những năm 2009 và được duy trì bởi Google',7,N'Đúng'),
             (N'HTML website?',8,N'Sai'),
             (N'CSS cho phép bạn định nghĩa kiểu, cách hiện thị cho các phần tử HTML',9,N'Đúng'),
-            (N'Bạn có thể sử dụng JavaScript để kiểm tra input và giảm thiểu việc kiểm tra thủ công khi truy xuất qua database',10,N'Đúng');
+            (N'Bạn có thể sử dụng JavaScript để kiểm tra input và giảm thiểu việc kiểm tra thủ công khi truy xuất qua database',10,N'Đúng'),
+            (N'Java là hahaha',1,N'Sai'),
+            (N'.NET Framework cơ cấu loài người',2,N'Sai'),
+			(N'.NET Framework là Framework lỗi thời',2,N'Sai');
 SELECT * FROM `Answer`;
 
 -- INSERT dữ liệu vào bảng Exam
@@ -267,6 +273,124 @@ VALUE
         (4,5),
         (1,9);
 SELECT * FROM `ExamQuestion`;
+
+-- ================lệnh SELECT================== --
+SELECT 	* 
+FROM 	`Account`;
+
+SELECT 	* 
+FROM 	`Account` 
+WHERE 	Email = 'ngtienanh@gmail.com';
+
+SELECT 	* 
+FROM 	`Account`
+WHERE 	DepartmentID = '1' AND PositionID = 2;
+
+SELECT 	* 
+FROM 	`Account`
+WHERE 	DepartmentID = 3 OR PositionID = 1; 
+         
+SELECT 	* 
+FROM 	`Account`
+WHERE 	DepartmentID BETWEEN 4 AND 9; -- dữ liệu nằm giữa
+
+SELECT 	* 
+FROM 	`Account`
+WHERE 	DepartmentID IN (4, 9, 10 ,11); -- lấy dữ liệu nằm trong ngoặc
+         
+SELECT 	* 
+FROM 	`Account`
+WHERE 	DepartmentID NOT IN (4, 9, 10 ,11); -- lấy dữ liệu không nằm trong ngoặc
+         
+SELECT 	FullName 
+FROM 	`Account` 
+WHERE  	FullName 
+LIKE 	'T%';
+
+SELECT 	FullName 
+FROM 	`Account` 
+WHERE  	FullName 
+NOT LIKE 'T%';
+
+SELECT 	FullName 
+FROM 	`Account` 
+WHERE  	FullName 
+LIKE 	'%T%'; -- % thay thế cho 1 chuỗi bất kì
+
+SELECT 	FullName 
+FROM 	`Account` 
+WHERE  	FullName 
+LIKE 	'__a%'; -- gạch dưới "_" đại diện cho 1 kí tự
+
+SELECT 	FullName 
+FROM 	`Account` 
+WHERE  	FullName IS NULL;
+
+SELECT 	FullName 
+FROM 	`Account` 
+WHERE  	FullName IS NOT NULL;
+
+-- select với thời gian
+SELECT * FROM `Account` WHERE CreateDate > '2021-03-24 00:00:00';
+SELECT * FROM `Account` WHERE CreateDate < '2021-03-24 00:00:00';
+SELECT * FROM `Account` WHERE CreateDate =  '2021-03-24 00:00:00';
+SELECT * FROM `Account` WHERE CreateDate <> '2021-03-24 00:00:00';
+SELECT * FROM `Account` WHERE CreateDate != '2021-03-24 00:00:00';
+
+SELECT * FROM `Account` ORDER BY Username;
+SELECT * FROM `Account` ORDER BY Username AND  DepartmentID DESC;
+
+
+-- 3 cách đếm
+SELECT *,1 FROM `Account`; -- 
+
+SELECT count(*) AS 'Số bản ghi Account' FROM `Account`; -- đếm số dòng, đếm cả 1 dòng trong 1 lần
+SELECT count(Fullname) AS 'Số bản ghi Account' FROM `Account`;
+SELECT count(1) AS 'Số bản ghi Account' FROM `Account`;
+-- ================= --
+-- hàm leght, sum, min, max
+
+-- ======== hàm max
+SELECT 		MAX(length(Fullname)) 
+AS 			'Ngày lập sớm nhất' 
+FROM 		`Account` ;
+
+SELECT 		MAX(length(Fullname)) 
+AS 			'Ngày lập sớm nhất' 
+FROM 		`Account` ;
+
+SELECT 		MIN(CreateDate) 
+AS 			'Ngày lập sớm nhất' 
+FROM 		`Account` ;
+
+-- lấy ra tất cả phòng ban --
+SELECT * FROM Department;    
+
+SELECT 		DepartmentID 
+AS 			'ID phòng sale' 
+FROM 		Department  
+WHERE  		DepartmentName = N'Sale';   
+
+SELECT 		* 
+FROM 		`Account` 
+WHERE 		length(Fullname) = (
+				SELECT 	MAX(length(Fullname)) 
+				FROM 	`Account` 
+				WHERE 	DepartmentID = '3'
+            ) 
+AND DepartmentID = '3';
+
+
+-- HÀM GROUP BY NHẰM CHIA RA CÁC NHÓM NHỎ THEO 1 TRƯỜNG NÀO ĐÓ
+SELECT		DepartmentName, count(Fullname) AS 'Số nhân viên' 
+FROM 		`Account` INNER JOIN Department
+WHERE 		`Account`.DepartmentID = Department.DepartmentID
+GROUP BY 	DepartmentName
+HAVING 		count(Fullname) > 1
+
+
+
+
 
 
 
