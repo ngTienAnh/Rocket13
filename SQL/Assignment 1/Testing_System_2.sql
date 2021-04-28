@@ -162,7 +162,8 @@ SELECT * FROM Account;
 -- INSERT dữ liệu vào bảng Group
 INSERT INTO `Group`(GroupName,CreatorID)
 VALUE 		
-			(N'Rockket01',1),
+			(N'Empty2',7),
+            (N'Rockket01',1),
             (N'Rockket02',2),
             (N'Rockket03',3),
             (N'Rockket04',7),
@@ -214,6 +215,7 @@ SELECT * FROM `CategoryQuestion`;
 -- INSERT dữ liệu vào bảng CategoryQuestion
 INSERT INTO `Question`(Content,CategoryID,TypeID,CreatorID)
 VALUE 		
+			(N'Java Sử dụng vào việc gì?',2,1,9),
 			(N'Java là gì?',1,1,1),
             (N'.NET là gì',2,2,2),
             (N'SQL là ngôn ngữ gì',3,2,9),
@@ -363,30 +365,7 @@ SELECT 		MIN(CreateDate)
 AS 			'Ngày lập sớm nhất' 
 FROM 		`Account` ;
 
--- lấy ra tất cả phòng ban --
-SELECT * FROM Department;    
 
-SELECT 		DepartmentID 
-AS 			'ID phòng sale' 
-FROM 		Department  
-WHERE  		DepartmentName = N'Sale';   
-
-SELECT 		* 
-FROM 		`Account` 
-WHERE 		length(Fullname) = (
-				SELECT 	MAX(length(Fullname)) 
-				FROM 	`Account` 
-				WHERE 	DepartmentID = '3'
-            ) 
-AND DepartmentID = '3';
-
-
--- HÀM GROUP BY NHẰM CHIA RA CÁC NHÓM NHỎ THEO 1 TRƯỜNG NÀO ĐÓ
-SELECT		DepartmentName, count(Fullname) AS 'Số nhân viên' 
-FROM 		`Account` INNER JOIN Department
-WHERE 		`Account`.DepartmentID = Department.DepartmentID
-GROUP BY 	DepartmentName
-HAVING 		count(Fullname) > 1
 
 
 
