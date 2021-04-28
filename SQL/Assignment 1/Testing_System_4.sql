@@ -94,13 +94,15 @@ HAVING		COUNT(a.AccountID)  = (
 			);
 
 -- Question 11: Thống kê mỗi phòng ban có bao nhiêu dev, test, scrum master, PM
-SELECT 		d.DepartmentName, count(a.AccountID) AS 'Số lượng nhân viên'
-FROM		`Account` a
-INNER JOIN	Department d
-ON 			a.DepartmentID = d.DepartmentID
-INNER JOIN	Position p
-ON 			p.PositionID = a.PositionID
-GROUP BY	p.PositionName;
+Select 		d.DepartmentName AS 'Phòng ban',PositionName AS 'Vị trí', count(a.DepartmentID) AS 'số nhân viên'
+From 		`Account` a
+INNER JOIN 	Department d
+ON			d.DepartmentID = a.DepartmentID
+INNER JOIN 	Position p
+ON			p.PositionID = a.PositionID
+GROUP BY	a.DepartmentID, a.PositionID
+ORDER BY	DepartmentName ASC;
+
 
 -- Question 12: Lấy thông tin chi tiết của câu hỏi bao gồm: thông tin cơ bản của
 -- question, loại câu hỏi, ai là người tạo ra câu hỏi, câu trả lời là gì,
@@ -144,7 +146,7 @@ GROUP BY	g.GroupName
 HAVING		count(ga.AccountID) = 0;
 
 -- Question 16: Lấy ra question không có answer nào
-SELECT 		q.Content AS 'Câu hỏi không có answ', count(a.AnswerID) AS 'Số lượng câu trả lời'
+SELECT 		q.Content AS 'Câu hỏi không có answer', count(a.AnswerID) AS 'Số lượng câu trả lời'
 FROM		Question q
 LEFT JOIN	Answer a
 ON 			a.QuestionID = q.QuestionID

@@ -14,13 +14,24 @@ FROM 		`Account` a
 WHERE		length(a.FullName) = (SELECT MAX(length(FullName)) FROM `Account`);
 
 -- Question 5: Lấy ra thông tin account có full name dài nhất và thuộc phòng ban có id = 3
+WITH CTE_MaxLeghtFullName AS (
+	SELECT 	MAX(length(FullName)) AS MaxFullname
+	FROM 	`Account` 
+    WHERE 	DepartmentID = 3
+)
 SELECT		*
 FROM		`Account` a
-WHERE		length(a.FullName) = (	SELECT MAX(length(FullName)) 
-									FROM `Account` 
-                                    WHERE DepartmentID = 3)
+HAVING		length(a.FullName) = (SELECT * FROM CTE_MaxLeghtFullName)
 AND			DepartmentID = 3
 ORDER BY 	Fullname DESC;
+-- cách 2
+WITH CTE_tbl_depr3 AS (
+	SELECT 	* FROM 	`Account` WHERE DepartmentID = 3
+)
+SELECT		*
+FROM		CTE_tbl_depr3 a
+HAVING		length(a.FullName) = (SELECT MAX(length(FullName)) FROM CTE_tbl_depr3)
+ORDER BY 	Fullname ASC;
 
 -- Question 6: Lấy ra tên group đã tham gia trước ngày 20/12/2019
 SELECT 		*
@@ -57,8 +68,8 @@ HAVING		DepartmentID = 2;
 
 -- Question 11: Lấy ra nhân viên có tên bắt đầu bằng chữ "D" và kết thúc bằng chữ "o"
 SELECT 		*
-FROM		`Account`
-WHERE		FullName LIKE '%T%n%';
+FROM		`Account` a
+WHERE		SUBSTRING_INDEX(a.Fullname,' ',-1) like 'A%h';
 
 -- Question 12: Xóa tất cả các exam được tạo trước ngày 20/12/2019
 DELETE		
