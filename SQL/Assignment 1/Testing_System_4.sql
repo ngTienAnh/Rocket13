@@ -152,9 +152,38 @@ LEFT JOIN	Answer a
 ON 			a.QuestionID = q.QuestionID
 GROUP BY	q.Content
 HAVING		count(a.AnswerID) = 0;
-	
-			
 
+-- expand ---
+-- == FULL EXCLUDING JOIN == --
+SELECT 		* 
+FROM 		Department d
+LEFT JOIN 	`Account` a
+ON			d.DepartmentID = a.DepartmentID
+WHERE		d.DepartmentID IS NULL
+UNION
+SELECT 		* 
+FROM 		Department d
+RIGHT JOIN 	`Account` a
+ON			d.DepartmentID = a.DepartmentID
+WHERE		a.DepartmentID IS NULL;
+	
+-- FULL OUTER JOIN --
+SELECT 		* 
+FROM 		Department d
+LEFT JOIN 	`Account` a
+ON			d.DepartmentID = a.DepartmentID
+WHERE		d.DepartmentID IS NULL
+UNION
+SELECT 		* 
+FROM 		Department d
+RIGHT JOIN 	`Account` a
+ON			d.DepartmentID = a.DepartmentID
+WHERE		a.DepartmentID IS NULL
+UNION
+SELECT 		* 
+FROM 		Department d
+INNER JOIN 	`Account` a
+ON			d.DepartmentID = a.DepartmentID;
 
 
 
