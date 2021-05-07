@@ -86,18 +86,23 @@ CALL proc_Find_Max_typequestionName;
 -- chuỗi của người dùng nhập vào
 DROP PROCEDURE IF EXISTS proc_Find_Max_Group_Account;
 DELIMITER $$ 
-	CREATE	PROCEDURE proc_Find_Max_Group_Account (IN in_Char VARCHAR(30))
+	CREATE	PROCEDURE proc_Find_Max_Group_Account (IN in_Char VARCHAR(30))  
 	BEGIN	
-			SELECT 		*
-			FROM		`Group` g
-			WHERE		g.GroupName like in_Char
-			UNION
-			SELECT 		*
-			FROM		`Account` a
-			WHERE		a.FullName like in_Char;
+			IF (SELECT 	count(g.GroupID) FROM `Group` g WHERE g.GroupName like CONCAT('%',in_Char,'%')) != 0 THEN
+				SELECT 	*
+                FROM 	`Group` g 
+                WHERE 	g.GroupName 
+                like 	CONCAT('%',in_Char,'%');
+			END IF;
+			IF (SELECT count(a.AccountID) FROM `Account` a WHERE	a.FullName like CONCAT('%',in_Char,'%')) != 0 THEN
+				SELECT 	*
+                FROM 	`Account` a
+                WHERE 	a.UserName
+                like 	CONCAT('%',in_Char,'%');
+			END IF;
     END$$
 DELIMITER 
-CALL proc_Find_Max_Group_Account;
+CALL proc_Find_Max_Group_Account('a');
 
 /* Question 7: Viết 1 store cho phép người dùng nhập vào thông tin fullName, email và trong store sẽ tự động gán:
 username sẽ giống email nhưng bỏ phần @..mail đi
@@ -163,11 +168,73 @@ DELIMITER $$
 DELIMITER 
 CALL proc_Delete_ExamID(11);
 
+/*Question 10: Tìm ra các exam được tạo từ 3 năm trước và xóa các exam đó đi (sử
+dụng store ở câu 9 để xóa)
+Sau đó in số lượng record đã remove từ các table liên quan trong khi
+removing*/
+DROP PROCEDURE IF EXISTS proc_Delete_ExamID;
+DELIMITER $$ 
+	CREATE PROCEDURE proc_Delete_Exam_3year(IN in_ExamID tinyint)
+	BEGIN	
+		DELETE FROM EXAM 
+        WHERE 		ExamID = in_ExamID;
+        SELECT 		*
+        FROM		Exam;
+	END$$
+DELIMITER 
+CALL proc_Delete_ExamID(11);
 
 
+/*Question 11: Viết store cho phép người dùng xóa phòng ban bằng cách người dùng
+nhập vào tên phòng ban và các account thuộc phòng ban đó sẽ được
+chuyển về phòng ban default là phòng ban chờ việc*/
 
+DROP PROCEDURE IF EXISTS proc_Delete_Department;
+DELIMITER $$ 
+	CREATE PROCEDURE proc_Delete_Department(IN in_DepartmentName varchar(30))
+	BEGIN
+		DECLARE 	in_DepartmentID tinyint;
+        
+        SELECT 		d.DepartmentID INTO in_DepartmentID
+        FROM		Department d
+        WHERE		d.DepartmentName =in_DepartmentName;
+        
+		UPDATE		`Account` 
+        SET			DepartmentID = 11
+        WHERE		DepartmentID = in_DepartmentID;
+        
+        DELETE	FROM	department
+        WHERE	departmentID = in_DepartmentID;
+        
+	END$$
+DELIMITER 
+CALL proc_Delete_Department('Thư ký');
 
+/*Question 12: Viết store để in ra mỗi tháng có bao nhiêu câu hỏi được tạo trong năm
+nay*/
 
+DROP PROCEDURE IF EXISTS proc_List_month_Question;
+DELIMITER $$ 
+	CREATE PROCEDURE proc_List_month_Question()
+	BEGIN
+		DECLARE 	in_DepartmentID tinyint;
+        
+        SELECT 		d.DepartmentID INTO in_DepartmentID
+        FROM		Department d
+        WHERE		d.DepartmentName =in_DepartmentName;
+        
+		UPDATE		`Account` 
+        SET			DepartmentID = 11
+        WHERE		DepartmentID = in_DepartmentID;
+        
+        DELETE	FROM	department
+        WHERE	departmentID = in_DepartmentID;
+        
+	END$$
+DELIMITER 
+CALL proc_List_month_Question('Thư ký');
+
+-- extend --
 
 
 
