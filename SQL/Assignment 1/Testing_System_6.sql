@@ -213,27 +213,64 @@ CALL proc_Delete_Department('Thư ký');
 /*Question 12: Viết store để in ra mỗi tháng có bao nhiêu câu hỏi được tạo trong năm
 nay*/
 
-DROP PROCEDURE IF EXISTS proc_List_month_Question;
-DELIMITER $$ 
-	CREATE PROCEDURE proc_List_month_Question()
-	BEGIN
-		DECLARE 	in_DepartmentID tinyint;
-        
-        SELECT 		d.DepartmentID INTO in_DepartmentID
-        FROM		Department d
-        WHERE		d.DepartmentName =in_DepartmentName;
-        
-		UPDATE		`Account` 
-        SET			DepartmentID = 11
-        WHERE		DepartmentID = in_DepartmentID;
-        
-        DELETE	FROM	department
-        WHERE	departmentID = in_DepartmentID;
-        
-	END$$
-DELIMITER 
-CALL proc_List_month_Question('Thư ký');
+DROP PROCEDURE IF EXISTS proc_List_Month_Question;
+DELIMITER $$
+CREATE PROCEDURE proc_List_Month_Question()
+BEGIN
+	WITH CTE_month AS (
+			SELECT 1 AS MONTH
+             UNION SELECT 2 AS MONTH
+             UNION SELECT 3 AS MONTH
+             UNION SELECT 4 AS MONTH
+             UNION SELECT 5 AS MONTH
+             UNION SELECT 6 AS MONTH
+             UNION SELECT 7 AS MONTH
+             UNION SELECT 8 AS MONTH
+             UNION SELECT 9 AS MONTH
+             UNION SELECT 10 AS MONTH
+             UNION SELECT 11 AS MONTH
+             UNION SELECT 12 AS MONTH
+    )
+    SELECT 		c.MONTH AS 'Tháng', count(QuestionID) AS 'Số câu hỏi'
+    FROM		CTE_month c 
+    LEFT JOIN	Question q	
+	ON 			month(CreateDate) = c.MONTH
+    GROUP BY	`MONTH`
+    ORDER BY	`MONTH` DESC;
+END$$
+DELIMITER ;
+CALL proc_List_Month_Question;
 
+/*Question 13: Viết store để in ra mỗi tháng có bao nhiêu câu hỏi được tạo trong 6
+tháng gần đây nhất
+(Nếu tháng nào không có thì sẽ in ra là "không có câu hỏi nào trong
+tháng")*/
+
+DROP PROCEDURE IF EXISTS proc_List_6_Month_Question;
+DELIMITER $$
+CREATE PROCEDURE proc_List_6_Month_Question()
+BEGIN
+	WITH CTE_month_table AS (
+		SELECT 		tb.MONTH AS 'Tháng', count(QuestionID) AS SL
+    FROM		(
+			SELECT month(now()) AS MONTH
+             UNION SELECT month(now()) - 1 AS MONTH
+			 UNION SELECT month(now()) - 2 AS MONTH
+             UNION SELECT month(now()) - 3 AS MONTH
+             UNION SELECT month(now()) - 4 AS MONTH
+             UNION SELECT month(now()) - 5 AS MONTH
+    ) AS tb
+    LEFT JOIN	Question q	
+	ON 			month(CreateDate) = tb.MONTH
+    GROUP BY	`MONTH` 
+    ORDER BY 	`MONTH` DESC
+    )
+	UPDATE 	CTE_month_table
+    SET		SL = N'Không có câu hỏi'
+    WHERE	SL like 0;
+END$$
+DELIMITER ;
+CALL proc_List_6_Month_Question;
 -- extend --
 
 
