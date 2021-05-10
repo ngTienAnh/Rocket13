@@ -266,29 +266,63 @@ DELIMITER ;
 
 DELETE FROM Exam WHERE ExamID = '1';
 
-
 /*Question 10: Viết trigger chỉ cho phép người dùng chỉ được update, delete các
 question khi question đó chưa nằm trong exam nào*/
-DROP TRIGGER IF EXISTS trig_Delete_Update_nonExamInQuestion;
+		
+        -- INSERT --
+DROP TRIGGER IF EXISTS trig_Delete_nonExamInQuestion;
 DELIMITER $$
-CREATE TRIGGER trig_Delete_Update_nonExamInQuestion
-BEFORE DELETE ON `Exam`
+CREATE TRIGGER trig_Delete_nonExamInQuestion
+BEFORE DELETE ON `Question` 
 FOR EACH ROW
 BEGIN
-
-	SELECT 		QuestionID,count(eq.ExamID) AS SL
-    FROM		Question q
-    LEFT JOIN	ExamQuestion eq
-    ON			q.QuestionID = eq.QuestionID
-    GROUP BY	q.QuestionID
+	DECLARE OLD_QuestionID tinyint;
+    SELECT 	tb_QE.SL INTO OLD_QuestionID
+		 FROM (
+			SELECT 		q.QuestionID,count(eq.ExamID) AS SL
+			FROM		Question q
+			LEFT JOIN	ExamQuestion eq
+			ON			q.QuestionID = eq.QuestionID
+			GROUP BY	q.QuestionID
+         ) AS tb_QE
+	WHERE 	OLD.QuestionID = tb_QE.QuestionID;
     
-	IF (NOW() - OLD.CreateDate ) >= 2 THEN
+	IF OLD_QuestionID != 0 THEN
 		SIGNAL SQLSTATE '12345'
-		SET MESSAGE_TEXT = 'không cho phép người dùng xóa bài thi mới tạo được 2 ngày';
+		SET MESSAGE_TEXT = 'không được delete khi question đã có trong exam';
 	END IF;
 END$$
 DELIMITER ;
 
+		-- UPDATE --
+DROP TRIGGER IF EXISTS trig_Update_nonExamInQuestion;
+DELIMITER $$
+CREATE TRIGGER trig_Update_nonExamInQuestion
+BEFORE Update ON `Question` 
+FOR EACH ROW
+BEGIN
+	DECLARE OLD_QuestionID tinyint;
+    SELECT 	tb_QE.SL INTO OLD_QuestionID
+		 FROM (
+			SELECT 		q.QuestionID,count(eq.ExamID) AS SL
+			FROM		Question q
+			LEFT JOIN	ExamQuestion eq
+			ON			q.QuestionID = eq.QuestionID
+			GROUP BY	q.QuestionID
+         ) AS tb_QE
+	WHERE 	OLD.QuestionID = tb_QE.QuestionID;
+    
+	IF OLD_QuestionID != 0 THEN
+		SIGNAL SQLSTATE '12345'
+		SET MESSAGE_TEXT = 'không được update khi question đã có trong exam';
+	END IF;
+END$$
+DELIMITER ;        
+        
+DELETE FROM Question q WHERE q.QuestionID = 1;
+UPDATE Question SET QuestionID = 2 WHERE QuestionID = 1;
+
+--
 -- ==========EXTENTS============ --
 CREATE TABLE log_Update_Department (
 	DepartmentID 		TINYINT PRIMARY KEY,
