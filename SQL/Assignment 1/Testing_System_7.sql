@@ -322,7 +322,37 @@ DELIMITER ;
 DELETE FROM Question q WHERE q.QuestionID = 1;
 UPDATE Question SET QuestionID = 2 WHERE QuestionID = 1;
 
---
+/*Question 14: Thống kê số mỗi phòng ban có bao nhiêu user, nếu phòng ban nào
+không có user thì sẽ thay đổi giá trị 0 thành "Không có User"*/
+
+DROP PROCEDURE IF EXISTS proc_List_userDep;
+DELIMITER $$
+	CREATE	PROCEDURE proc_List_userDep ()
+	BEGIN
+    SELECT * FROM (
+		SELECT 		d.DepartmentName, count(a.AccountID) AS SL
+		FROM		`Account` a
+		RIGHT JOIN	Department d
+		ON			a.DepartmentID = d.DepartmentID
+		GROUP BY	d.DepartmentName
+	) AS tb_DEP;
+        IF tb_DEP.SL = 0 THEN
+			UPDATE 	tb_DEP
+            SET		SL = 'Không có User' 
+            WHERE	SL = 0;
+		END IF;
+    END$$
+DELIMITER;
+CALL proc_List_userDep();
+
+
+
+
+
+
+
+
+
 -- ==========EXTENTS============ --
 CREATE TABLE log_Update_Department (
 	DepartmentID 		TINYINT PRIMARY KEY,
