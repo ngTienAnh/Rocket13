@@ -276,10 +276,11 @@ BEFORE DELETE ON `Exam`
 FOR EACH ROW
 BEGIN
 
-	SELECT 		count()
+	SELECT 		QuestionID,count(eq.ExamID) AS SL
     FROM		Question q
     LEFT JOIN	ExamQuestion eq
     ON			q.QuestionID = eq.QuestionID
+    GROUP BY	q.QuestionID
     
 	IF (NOW() - OLD.CreateDate ) >= 2 THEN
 		SIGNAL SQLSTATE '12345'
