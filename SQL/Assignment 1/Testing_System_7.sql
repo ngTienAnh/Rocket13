@@ -7,6 +7,12 @@ CREATE TRIGGER trig_Insert_Group
 AFTER DELETE ON `Group`
 FOR EACH ROW
 BEGIN
+	DECLARE Date_year DATETIME;
+    SET Date_year = subdate(now(),INTERVAL 1 YEAR);
+    /*IF Date_year >= NEW.CreateDate THEN
+		SIGNAL SQLSTATE '12345'
+		SET MESSAGE_TEXT = 'Năm tạo phải trong năm nay';
+	END IF;*/
 	IF YEAR(NEW.CreateDate) - YEAR(now()) > 1 THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = 'Năm tạo phải trong năm nay';
@@ -15,7 +21,7 @@ END$$
 DELIMITER 
 DELETE FROM `Account` WHERE Email = 'ngtienanh199@gmail.com';
 
-/*uestion 2: Tạo trigger Không cho phép người dùng thêm bất kỳ user nào vào
+/*Question 2: Tạo trigger Không cho phép người dùng thêm bất kỳ user nào vào
 department "Sale" nữa, khi thêm thì hiện ra thông báo "Department
 "Sale" cannot add more user"*/
 		-- INSERT --
@@ -25,11 +31,13 @@ CREATE TRIGGER trig_NoMoreUser_Sal_Insert
 BEFORE INSERT ON `Account`
 FOR EACH ROW
 BEGIN
-	IF NEW.DepartmentID = (
-				SELECT 	DepartmentID AS DepID
-				FROM		Department
-				WHERE 		DepartmentName = 'Sale') 
-	THEN
+	DECLARE 	SLDepID TINYINT;
+    
+    SELECT 		DepartmentID INTO DepID
+	FROM		Department
+	WHERE 		DepartmentName = 'Sale';
+    
+	IF NEW.DepartmentID = SLDepID THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = 'Department "Sale" cannot add more user';
 	END IF;
@@ -42,11 +50,13 @@ CREATE TRIGGER trig_NoMoreUser_Sale_Update
 BEFORE UPDATE ON `Account`
 FOR EACH ROW
 BEGIN
-	IF NEW.DepartmentID = (
-				SELECT 	DepartmentID AS DepID
-				FROM		Department
-				WHERE 		DepartmentName = 'Sale') 
-	THEN
+	DECLARE 	SLDepID TINYINT;
+    
+    SELECT 		DepartmentID INTO DepID
+	FROM		Department
+	WHERE 		DepartmentName = 'Sale';
+    
+	IF NEW.DepartmentID = SLDepID THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = 'Department "Sale" cannot add more user';
 	END IF;
@@ -65,21 +75,18 @@ CREATE TRIGGER trig_NoMoreThan5User_Group_Insert
 AFTER INSERT ON `Groupaccount`
 FOR EACH ROW
 BEGIN
-	IF (
-    SELECT 	tb_AG.SL
-	FROM (
-		SELECT 		GroupID, count(AccountID) AS SL
-		FROM		GroupAccount
-		GROUP BY	GroupID
-	) AS tb_AG
-	WHERE tb_AG.GroupID = NEW.GroupID
-    ) > 5
-	THEN
+	DECLARE SLacc TINYINT;
+    
+	SELECT 		GroupID, count(1) INTO SLacc
+	FROM		GroupAccount
+	WHERE 		tb_AG.GroupID = NEW.GroupID;
+    
+	IF SLacc > 5 THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = '1 group có nhiều nhất là 5 user';
 	END IF;
 END$$
-DELIMITER;
+DELIMITER ;
 		-- UPDATE --
 DROP TRIGGER IF EXISTS trig_NoMoreThan5User_Group_Update;
 DELIMITER $$
@@ -87,16 +94,13 @@ CREATE TRIGGER trig_NoMoreThan5User_Group_Update
 AFTER UPDATE ON `Groupaccount`
 FOR EACH ROW
 BEGIN
-	IF (
-    SELECT 	tb_AG.SL
-	FROM (
-		SELECT 		GroupID, count(AccountID) AS SL
-		FROM		GroupAccount
-		GROUP BY	GroupID
-	) AS tb_AG
-	WHERE tb_AG.GroupID = NEW.GroupID
-    ) > 5
-	THEN
+	DECLARE SLacc TINYINT;
+    
+	SELECT 		GroupID, count(1) INTO SLacc
+	FROM		GroupAccount
+	WHERE 		tb_AG.GroupID = NEW.GroupID;
+    
+	IF SLacc > 5 THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = '1 group có nhiều nhất là 5 user';
 	END IF;
@@ -116,16 +120,13 @@ CREATE TRIGGER trig_NoMoreThan5Question_ExamQuestion_Insert
 AFTER INSERT ON `ExamQuestion`
 FOR EACH ROW
 BEGIN
-	IF (
-    SELECT 	tb_EQ.SL
-	FROM (
-		SELECT 		ExamID, count(QuestionID) AS SL
-		FROM		ExamQuestion
-		GROUP BY	ExamID
-	) AS tb_EQ
-	WHERE tb_EQ.ExamID = NEW.ExamID
-    ) > 3
-	THEN
+	DECLARE		SLques TINYINT;
+    
+	SELECT 		ExamID, count(1) INTO SLques
+	FROM		ExamQuestion
+	WHERE 		tb_EQ.ExamID = NEW.ExamID;
+    
+	IF SLques > 3 THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = '1 bài thi có nhiều nhất là 3 Question';
 	END IF;
@@ -139,15 +140,13 @@ CREATE TRIGGER trig_NoMoreThan5Question_ExamQuestion_Insert
 AFTER UPDATE ON `ExamQuestion`
 FOR EACH ROW
 BEGIN
-	IF (
-    SELECT 	tb_EQ.SL
-	FROM (
-		SELECT 		ExamID, count(QuestionID) AS SL
-		FROM		ExamQuestion
-		GROUP BY	ExamID
-	) AS tb_EQ
-	WHERE tb_EQ.ExamID = NEW.ExamID
-    ) > 3
+	DECLARE	SLques TINYINT;
+    
+	SELECT 		ExamID, count(1) INTO SLques
+	FROM		ExamQuestion
+	WHERE 		tb_EQ.ExamID = NEW.ExamID;
+    
+	IF SLques > 3
 	THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = '1 bài thi có nhiều nhất là 3 Question';
@@ -190,14 +189,17 @@ vào departmentID thì sẽ được phân vào phòng ban "waiting Department"*
 DROP TRIGGER IF EXISTS trig_Insert_nonDepartmentID_Account;
 DELIMITER $$
 CREATE TRIGGER trig_Insert_nonDepartmentID_Account
-AFTER INSERT ON `Account`
+BEFORE INSERT ON `Account`
 FOR EACH ROW
 BEGIN
-	IF NEW.DepartmentID = NULL THEN
-		-- NEW.DepartmentID = (SELECT DepartmentID FROM Department WHERE DepartmentName = "Phòng chờ");
-        UPDATE 	`Account` a
-		SET 	DepartmentID = (SELECT DepartmentID FROM Department WHERE DepartmentName = "Phòng chờ")
-		WHERE 	a.AccountID = NEW.AccountID;
+	DECLARE DepID TINYINT;
+    
+    SELECT 	DepartmentID INTO DepID
+    FROM 	Department 
+    WHERE 	DepartmentName = "Phòng chờ";
+    
+	IF NEW.DepartmentID IS NULL THEN
+        SET NEW.DepartmentID = DepID;
 	END IF;
 END$$
 DELIMITER ;
@@ -215,28 +217,23 @@ CREATE TRIGGER trig_Max4Ans_2correc
 AFTER INSERT ON `Answer`
 FOR EACH ROW
 BEGIN
-	IF (
-    SELECT 	tb_AW.SL
-	FROM (
-			SELECT 		QuestionID, count(aw.AnswerID) AS SL
-			FROM		Answer aw
-			GROUP BY 	aw.QuestionID
-	) AS tb_AW
-	WHERE tb_AW.QuestionID = NEW.QuestionID
-    ) > 3
+	DECLARE	SLans TINYINT;
+	DECLARE SLansCr TINYINT;
+    
+	SELECT 		QuestionID, count(1) INTO SLans
+	FROM		Answer aw
+	WHERE		tb_AW.QuestionID = NEW.QuestionID;
+
+	SELECT 		QuestionID, count(1) INTO SLansCr
+	FROM		Answer aw
+	WHERE		isCorrect = 'Đúng'
+	AND			tb_AW.QuestionID =  NEW.QuestionID;
+    
+	IF SLans > 3
 	THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = '1 question có nhiều nhất là 3 answers';
-	ELSE IF (
-		SELECT 	tb_AW.SL
-		FROM (
-			SELECT 		QuestionID, count(aw.AnswerID) AS SL
-			FROM		Answer aw
-            WHERE		isCorrect = 'Đúng'
-			GROUP BY 	aw.QuestionID
-		) AS tb_AW
-		WHERE	tb_AW.QuestionID =  NEW.QuestionID
-    ) > 2
+	ELSE IF SLansCr > 2
 	THEN 
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = 'chỉ có tối đa 2 câu trả lời đúng';
@@ -257,7 +254,9 @@ CREATE TRIGGER trig_Delete_2dateEarly
 BEFORE DELETE ON `Exam`
 FOR EACH ROW
 BEGIN
-	IF (NOW() - OLD.CreateDate ) >= 2 THEN
+	DECLARE	Date_2day DATETIME;
+    SET Date_2day = DATE_SUB(NOW(),interval 2 DAY);
+	IF Date_2day > NOW() THEN
 		SIGNAL SQLSTATE '12345'
 		SET MESSAGE_TEXT = 'không cho phép người dùng xóa bài thi mới tạo được 2 ngày';
 	END IF;
@@ -277,14 +276,11 @@ BEFORE DELETE ON `Question`
 FOR EACH ROW
 BEGIN
 	DECLARE OLD_QuestionID tinyint;
-    SELECT 	tb_QE.SL INTO OLD_QuestionID
-		 FROM (
-			SELECT 		q.QuestionID,count(eq.ExamID) AS SL
-			FROM		Question q
-			LEFT JOIN	ExamQuestion eq
-			ON			q.QuestionID = eq.QuestionID
-			GROUP BY	q.QuestionID
-         ) AS tb_QE
+    
+	SELECT 		q.QuestionID,count(1) INTO OLD_QuestionID
+	FROM		Question q
+	LEFT JOIN	ExamQuestion eq
+	ON			q.QuestionID = eq.QuestionID
 	WHERE 	OLD.QuestionID = tb_QE.QuestionID;
     
 	IF OLD_QuestionID != 0 THEN
@@ -302,14 +298,11 @@ BEFORE Update ON `Question`
 FOR EACH ROW
 BEGIN
 	DECLARE OLD_QuestionID tinyint;
-    SELECT 	tb_QE.SL INTO OLD_QuestionID
-		 FROM (
-			SELECT 		q.QuestionID,count(eq.ExamID) AS SL
-			FROM		Question q
-			LEFT JOIN	ExamQuestion eq
-			ON			q.QuestionID = eq.QuestionID
-			GROUP BY	q.QuestionID
-         ) AS tb_QE
+    
+	SELECT 		q.QuestionID,count(1) INTO OLD_QuestionID
+	FROM		Question q
+	LEFT JOIN	ExamQuestion eq
+	ON			q.QuestionID = eq.QuestionID
 	WHERE 	OLD.QuestionID = tb_QE.QuestionID;
     
 	IF OLD_QuestionID != 0 THEN
@@ -322,6 +315,37 @@ DELIMITER ;
 DELETE FROM Question q WHERE q.QuestionID = 1;
 UPDATE Question SET QuestionID = 2 WHERE QuestionID = 1;
 
+/*Question 12: Lấy ra thông tin exam trong đó:
+Duration <= 30 thì sẽ đổi thành giá trị "Short time"
+30 < Duration <= 60 thì sẽ đổi thành giá trị "Medium time"
+Duration > 60 thì sẽ đổi thành giá trị "Long time"*/
+SELECT * FROM Exam;
+SELECT		e.ExamID, e.`Code`, e.Title, CASE
+			WHEN	Duration <= 30 THEN 'Short time'
+            WHEN	Duration <= 60 THEN 'Medium time'
+            ELSE	'Long time'
+            END AS 	Druation
+FROM 		Exam e;
+
+SELECT e.ExamID, e.`Code`, e.Title, e.Duration FROM Exam e;
+
+
+/*Question 13: Thống kê số account trong mỗi group và in ra thêm 1 column nữa có tên
+là the_number_user_amount và mang giá trị được quy định như sau:2
+Nếu số lượng user trong group =< 5 thì sẽ có giá trị là few
+Nếu số lượng user trong group <= 20 và > 5 thì sẽ có giá trị là normal
+Nếu số lượng user trong group > 20 thì sẽ có giá trị là higher*/
+
+SELECT 		g.GroupName, count(ga.AccountID) AS SL, CASE 
+				WHEN 	count(ga.AccountID) < 2   THEN 'few'
+                WHEN 	count(ga.AccountID) > 4   THEN 'higher'
+                ELSE	'normal'
+				END AS 	Druation
+FROM 		GroupAccount ga
+LEFT JOIN	`Group` g	
+ON			ga.GroupID = g.GroupID
+GROUP BY	g.GroupID;
+
 /*Question 14: Thống kê số mỗi phòng ban có bao nhiêu user, nếu phòng ban nào
 không có user thì sẽ thay đổi giá trị 0 thành "Không có User"*/
 
@@ -329,20 +353,17 @@ DROP PROCEDURE IF EXISTS proc_List_userDep;
 DELIMITER $$
 	CREATE	PROCEDURE proc_List_userDep ()
 	BEGIN
-    SELECT * FROM (
-		SELECT 		d.DepartmentName, count(a.AccountID) AS SL
-		FROM		`Account` a
-		RIGHT JOIN	Department d
-		ON			a.DepartmentID = d.DepartmentID
-		GROUP BY	d.DepartmentName
-	) AS tb_DEP;
-        IF tb_DEP.SL = 0 THEN
-			UPDATE 	tb_DEP
-            SET		SL = 'Không có User' 
-            WHERE	SL = 0;
-		END IF;
+
+	SELECT 	DepartmentName AS 'Tên Phòng', CASE 
+				WHEN COUNT(a.AccountID)	= 0 THEN 'Không có User'
+                ELSE COUNT(a.AccountID)
+                END AS 'Số user'
+	FROM		`Account` a
+	RIGHT JOIN	Department d
+	ON			a.DepartmentID = d.DepartmentID
+	GROUP BY	d.DepartmentName;
     END$$
-DELIMITER;
+DELIMITER ;
 CALL proc_List_userDep();
 
 
