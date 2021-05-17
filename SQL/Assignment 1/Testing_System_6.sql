@@ -1,3 +1,4 @@
+USE TestingSystem;
 -- Question 1: Tạo store để người dùng nhập vào tên phòng ban và in ra tất cả các account thuộc phòng ban đó
 DROP PROCEDURE IF EXISTS proc_List_DepartmentName_Account;
 DELIMITER $$
@@ -176,14 +177,48 @@ DROP PROCEDURE IF EXISTS proc_Delete_ExamID;
 DELIMITER $$ 
 	CREATE PROCEDURE proc_Delete_Exam_3year(IN in_ExamID tinyint)
 	BEGIN	
-		DELETE FROM EXAM 
-        WHERE 		ExamID = in_ExamID;
-        SELECT 		*
-        FROM		Exam;
+		
 	END$$
 DELIMITER 
-CALL proc_Delete_ExamID(11);
+CALL proc_Delete_Exam_3year(11);
 
+DROP PROCEDURE IF EXISTS SP_DeleteExamBefore3Year;
+DELIMITER $$
+CREATE PROCEDURE SP_DeleteExamBefore3Year()
+BEGIN-- Khai báo biến sử dụng trong chương trình
+DECLARE v_ExamID TINYINT UNSIGNED;
+DECLARE v_CountExam TINYINT UNSIGNED DEFAULT 0;
+DECLARE v_CountExamquestion TINYINT UNSIGNED DEFAULT 0;
+DECLARE i TINYINT UNSIGNED DEFAULT 1;
+DECLARE v_print_Del_info_Exam VARCHAR(50) ;
+-- Tạo bảng tạm
+DROP TABLE IF EXISTS ExamIDBefore3Year_Temp;
+CREATE TABLE ExamIDBefore3Year_Temp(
+ID INT PRIMARY KEY AUTO_INCREMENT,
+ExamID INT);
+-- Insert dữ liệu bảng tạm
+INSERT INTO ExamIDBefore3Year_Temp(ExamID)
+SELECT e.ExamID FROM exam e WHERE (year(now()) - year(e.CreateDate)) >2;
+-- Lấy số lượng số Exam và ExamQuestion cần xóa.
+SELECT count(1) INTO v_CountExam FROM ExamIDBefore3Year_Temp;
+SELECT count(1) INTO v_CountExamquestion FROM examquestion ex
+INNER JOIN ExamIDBefore3Year_Temp et ON ex.ExamID = et.ExamID;
+-- Thực hiện xóa trên bảng Exam và ExamQuestion sử dụng Procedure đã tạo ở Question9 bên trên
+WHILE (i <= v_CountExam) DO
+SELECT ExamID INTO v_ExamID FROM ExamIDBefore3Year_Temp WHERE ID=i;
+CALL proc_Delete_ExamID(v_ExamID);
+SET i = i +1;
+END WHILE;
+-- In câu thông báo
+SELECT CONCAT("DELETE ",v_CountExam," IN Exam AND ", v_CountExamquestion ," IN ExamQuestion") INTO v_print_Del_info_Exam;
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = v_print_Del_info_Exam ;
+-- Xóa bảng tạm sau khi hoàn thành
+DROP TABLE IF EXISTS ExamIDBefore3Year_Temp;
+END$$
+DELIMITER ;
+-- Run Procedure
+Call SP_DeleteExamBefore3Year;
 
 /*Question 11: Viết store cho phép người dùng xóa phòng ban bằng cách người dùng
 nhập vào tên phòng ban và các account thuộc phòng ban đó sẽ được
@@ -203,8 +238,8 @@ DELIMITER $$
         SET			DepartmentID = 11
         WHERE		DepartmentID = in_DepartmentID;
         
-        DELETE	FROM	department
-        WHERE	departmentID = in_DepartmentID;
+        DELETE FROM department
+        WHERE		departmentID = in_DepartmentID;
         
 	END$$
 DELIMITER 
@@ -251,23 +286,21 @@ DELIMITER $$
 CREATE PROCEDURE proc_List_6_Month_Question()
 BEGIN
 	WITH CTE_month_table AS (
-		SELECT 		tb.MONTH AS 'Tháng', count(QuestionID) AS SL
-    FROM		(
-			SELECT month(now()) AS MONTH
-             UNION SELECT month(now()) - 1 AS MONTH
-			 UNION SELECT month(now()) - 2 AS MONTH
-             UNION SELECT month(now()) - 3 AS MONTH
-             UNION SELECT month(now()) - 4 AS MONTH
-             UNION SELECT month(now()) - 5 AS MONTH
-    ) AS tb
-    LEFT JOIN	Question q	
-	ON 			month(CreateDate) = tb.MONTH
-    GROUP BY	`MONTH` 
-    ORDER BY 	`MONTH` DESC
+			 SELECT MONTH(DATE_SUB(NOW(),INTERVAL 1 MONTH )) AS MONTH, YEAR(DATE_SUB(NOW(),INTERVAL 1 MONTH )) AS YEAR
+             UNION SELECT MONTH(DATE_SUB(NOW(),INTERVAL 2 MONTH )) AS MONTH, YEAR(DATE_SUB(NOW(),INTERVAL 2 MONTH )) AS YEAR
+			 UNION SELECT MONTH(DATE_SUB(NOW(),INTERVAL 3 MONTH )) AS MONTH, YEAR(DATE_SUB(NOW(),INTERVAL 3 MONTH )) AS YEAR
+             UNION SELECT MONTH(DATE_SUB(NOW(),INTERVAL 4 MONTH )) AS MONTH, YEAR(DATE_SUB(NOW(),INTERVAL 4 MONTH )) AS YEAR
+             UNION SELECT MONTH(DATE_SUB(NOW(),INTERVAL 5 MONTH )) AS MONTH, YEAR(DATE_SUB(NOW(),INTERVAL 5 MONTH )) AS YEAR
+             UNION SELECT MONTH(DATE_SUB(NOW(),INTERVAL 6 MONTH )) AS MONTH, YEAR(DATE_SUB(NOW(),INTERVAL 6 MONTH )) AS YEAR
     )
-	UPDATE 	CTE_month_table
-    SET		SL = N'Không có câu hỏi'
-    WHERE	SL like 0;
+    SELECT 		tb.YEAR AS 'Năm',tb.MONTH AS 'Tháng', CASE 
+									WHEN count(q.QuestionID) = 0 THEN 'Không có câu hỏi'
+                                    ELSE COUNT(q.QuestionID) END AS SL
+    FROM 		CTE_month_table tb
+	LEFT JOIN	Question q	
+	ON 			MONTH(q.CreateDate) = tb.MONTH
+	GROUP BY	`MONTH` 
+	ORDER BY 	`MONTH`,`YEAR` ASC;
 END$$
 DELIMITER ;
 CALL proc_List_6_Month_Question;
