@@ -8,6 +8,4 @@ public class Group {
 	public int CreatorID;
 	public LocalDate creatdate;
 	public Account[] Account;
-	
-	
 }

@@ -2,13 +2,13 @@ package com.vti.entity;
 
 import java.time.LocalDate;
 
-public class Question {
+public class Exam {
 	public int ID;
-	public String Content;
+	public String Code;
+	public String Title;
 	public Category Category;
-	public TypeQuestion Type;
+	public int Duration;
 	public Account Creator;
 	public LocalDate CreateDate;
-	public Answer Answer[];
-	public Exam Exam[];
+	public Question Question[];
 }

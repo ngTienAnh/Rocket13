@@ -1,16 +1,17 @@
-package com.vti.entity;
+package com.vti.backend;
 
+import com.vti.entity.Account;
+import com.vti.entity.Department;
+import com.vti.entity.Group;
+import com.vti.entity.Position;
 import com.vti.entity.Position.PosititionName;
-
-import sun.print.resources.serviceui;
 
 public class main {
 	public static void main(String[] args) {
-
 		Group group2 = new Group();
 		group2.ID = 2;
 		group2.Name = "rocket2";
-
+		
 		Group group3 = new Group();
 		group3.ID = 3;
 		group3.Name = "rocket3";
@@ -129,7 +130,8 @@ public class main {
 			System.out.println("group name:" + acct1.group[i].Name);
 		}
 		
-//foreach
 		for(Group group : acct1.group) {
-	}}
+			System.out.println("group:" );
+		}
+	}
 }
