@@ -1,6 +1,17 @@
 package com.vti.entity;
 
 public class Department {
-	public int ID;
-	public String Name;
+	private int ID;
+	private String Name;
+	
+	public Department() {
+		super();
+	}
+
+
+	public Department( String name) {
+		super();
+		this.ID = 0;
+		this.Name = name;
+	}
 }

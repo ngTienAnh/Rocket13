@@ -4,14 +4,14 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 public class Account {
-	public int ID;
-	public String email;
-	public String userName;
-	public String fullName;
-	public Position position;
-	public Department department;
-	public LocalDate creatdate;
-	public Group[] group;
+	private int ID;
+	private String email;
+	private String userName;
+	private String fullName;
+	private Position position;
+	private Department department;
+	private LocalDate creatdate;
+	private Group[] group;
 	
 	public Account(int iD, String email, String userName, String fullName, Position position, Department department,
 			LocalDate creatdate, Group[] group) {
@@ -29,12 +29,34 @@ public class Account {
 	public Account() {
 		super();
 	}
+	
+	public Account(String userName) {
+		this.userName = userName;
+	}
 
 	@Override
 	public String toString() {
 		return "Account [ID=" + ID + ", email=" + email + ", userName=" + userName + ", fullName=" + fullName
 				+ ", position=" + position + ", department=" + department + ", creatdate=" + creatdate + ", group="
 				+ Arrays.toString(group) + "]";
+	}
+	
+	public Account(int iD, String email, String userName, String firstName, String lastName) {
+		super();
+		ID = iD;
+		this.email = email;
+		this.userName = userName;
+		this.fullName = firstName + lastName;
+	}
+	
+	public Account(int iD, String email, String userName, String firstName, String lastName,Position position, LocalDate creatdate) {
+		super();
+		ID = iD;
+		this.email = email;
+		this.userName = userName;
+		this.fullName = firstName + lastName;
+		this.position = position;
+		this.creatdate = creatdate;
 	}
 
 	public int getID() {
