@@ -5,8 +5,8 @@ import java.text.ParseException;
 import com.vti.backend.Exercise_1;
 
 public class main {
+	private static int x;
 	public static void main(String[] args) throws ParseException {
-		Exercise_1 ex1 = new Exercise_1();
-		ex1.Question2();
+		System.out.println("// Looks like a comment");
 	}
 }

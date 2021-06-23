@@ -1,0 +1,37 @@
+*{
+	 margin: 0px;
+	 padding: 0px auto;
+}
+
+.menu ul{
+	display: flex;
+	margin-left: 200px;
+	margin-right: 200px;
+	list-style-type: none;
+}
+.menu li {
+	height: 60px;
+	width: 250px;
+	list-style: none;
+	border-left: #0E7B9F;
+	border-left: 5px;
+	border-right-color: #0E7C1F;
+	border-right: 2px;
+}
+
+.menu li:hover {
+	background-color: #0E7B9F;
+}
+.menu li a{
+	padding-top:17px;
+	text-decoration: none;
+	display: block;
+	font-weight: bold;
+	color:#ffffff;
+	text-align:center;
+}
+
+.menu {
+	height: 60px;
+	background-color: #0E5B9F;
+}
