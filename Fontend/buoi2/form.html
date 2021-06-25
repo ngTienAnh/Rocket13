@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PRODUCT</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>PRODUCT INFORMATION</h2>
+  <form onload="DataIntoDropList()" style="border-radius: 5px; background-color: rgb(209, 205, 205); ">
+    <div style="padding: 25px;">
+    <div class="form-group">
+      <label for="email">PRODUCT NAME:</label>
+      <input type="email" class="form-control" id="procname" placeholder="Product name" name="email">
+    </div>
+    <div class="form-group">
+        <label for="pwd">MANUAFACTURAL NAME:</label><br/>
+        <select class="form-control" id="Manufacturer_Select_id" placeholder="Manufactural name" >
+            <option value = "Apple">Apple</option>
+            <option value = "Dell">Dell</option>
+            <option value = "Sam Sung">Sam Sung</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="pwd">CATEGORY NAME:</label>
+        <input type="password" class="form-control" id="proccate" placeholder="Category name" name="pwd">
+      </div>
+      <div class="form-group">
+        <label for="pwd">PRICE</label>
+        <input type="password" class="form-control" id="procprice" placeholder="Price" name="pwd">
+      </div>
+      <div class="form-group">
+        <label for="pwd">QUANTITY</label>
+        <input type="password" class="form-control" id="procquan" placeholder="Quantity" name="pwd">
+      </div>
+      <div class="form-group">
+        <label for="pwd">TOTAL PRICE</label>
+        <input type="password" class="form-control" id="proctotal" placeholder="Total price" name="pwd">
+      </div>
+    <button type="submit" class="btn btn-danger navbar-btn" onclick="addtocart()">Submit</button>
+    <button type="reset" class="btn btn-default">Reset</button>
+    </div>
+  </form>
+  <div class="wrapper" style="margin-top: 50px; ">
+    <head class=""><h2>PRODUCT CART</h2></head>
+    <section>
+    <table class="table-cart table table-hover" " >
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Product Name</th>
+            <th>Manufacturer Name</th>
+            <th>Category Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+        </tr>
+        <tr id="tr_table"></tr>
+    </thead>
+    </table>           
+    </section>
+  </div>
+</div>
+<script>
+    var Dropdownlist = {
+        "Dell": ["7710", "5510", "XPS"],
+        "Apple": ["Iphone", "Ipad", "Macbook"],
+        "Sam Sung": ["Galaxy Tab", "Note 10", "Galaxy Edge"]
+    }
+    var proclist =[];
+    var itemprocduct
+    function DataIntoDropList(){
+        document.getElementById("Manufacturer_Select_id").innerHTML += "<option value = \"Apple\">Apple</option><option value = \"Dell\">Dell</option><option value = \"Sam Sung\">Sam Sung</option>";
+    }
+    function addtocart(){
+        var namepro = document.getElementById("procname").value;
+        var manupro = document.getElementById("Manufacturer_Select_id").value;
+        var catepro = document.getElementById("proccate").value
+        var pricepro = document.getElementById("procprice").value;
+        var quanpro = document.getElementById("procquan").value;
+        var totalpro = document.getElementById("proctotal").value;
+
+        var proc = {
+            P_namepro: namepro,
+            p_manupro: manupro,
+            p_catepro: catepro,
+            p_pricepro: pricepro,
+            p_quanpro: quanpro,
+            p_totalpro: totalpro,
+        }
+        proclist.push(proc);
+        showlist();
+        
+    }
+    function showlist(){
+        
+        for (var i= 0 ; i < proclist.length; i++) {
+            var item = proclist[i]
+            document.getElementById("tr_table").innerHTML +=
+       ` <td>${i+1}</td>
+        <td>${item.P_namepro}</td>
+        <td>${item.p_manupro}</td>
+        <td>${item.p_catepro}</td>
+        <td>${item.p_pricepro}</td>
+        <td>${item.p_quanpro}</td>
+        <td>
+            <input type="button" value="Edit" class="btn btn-danger navbar-btn" onclick="editProduct(${i})">
+            <input type="button" value="Delete" class="btn btn-default" onclick="delProduct(${i})">
+        </td>`
+        }
+    }
+</script>
+</body>
+</html>

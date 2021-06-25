@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Register</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Register</h2>
+  <form class="form-horizontal" >
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Email:</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+      </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-sm-2" for="pwd">Fullname:</label>
+        <div class="col-sm-10">          
+          <input type="text" class="form-control" id="fullname" placeholder="Enter fullname" name="pwd">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="pwd">Phone number:</label>
+        <div class="col-sm-10">          
+          <input type="number" class="form-control" id="phone" placeholder="Enter phonenumber" name="pwd">
+        </div>
+      </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Password:</label>
+      <div class="col-sm-10">          
+        <input type="password" class="form-control" id="password" placeholder="Enter password" name="pwd">
+      </div>
+    </div>
+
+    
+      <div class="form-group">        
+        <div class="col-sm-offset-2 col-sm-10">
+          <div class="checkbox">
+            <label><input type="checkbox" name="remember"> Remember me</label>
+            <a href="login.html">  Had Account? Login</a>
+          </div>
+          
+        </div>
+      </div>
+      <div class="form-group">        
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default" onclick="regis()">Register</button>
+          <button type="button" class="btn btn-default" onclick="reset()">Reset</button>
+        </div>
+      </div>
+  </form>
+</div>
+<script>
+    function regis(){
+        var email = document.getElementById("email").value;
+        var fullname = document.getElementById("fullname").value;
+        var phone = document.getElementById("phone").value;
+        var password = document.getElementById("password").value;
+        if(email == ""){
+            alert("chưa điền email")
+        }else if(fullname == ""){
+            alert("chưa điền fullname")
+        }else if(phone == ""){
+            alert("chưa điền phone")
+        }else if (password == ""){
+            alert("chưa điền passwords")
+        }else 
+        {
+            var user = {
+            Full_Name: fullname,
+            Email: email,
+            Password: password,
+            Phone: phone,
+            }
+            var json = JSON.stringify(user);
+            localStorage.setItem('user',json);
+            alert("đăng ký thành công");
+            window.open("VTI_homepage.html");
+        }
+    }
+    function reset(){
+        document.getElementById.clear;
+        document.getElementById.clear;
+        document.getElementById.clear;
+        document.getElementById.clear;
+    }
+</script>
+</body>
+</html>
