@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PRODUCT</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>PRODUCT INFORMATION</h2>
+  <form onload="DataIntoDropList()" style="border-radius: 5px; background-color: rgb(209, 205, 205); ">
+    <div style="padding: 25px;">
+    <div class="form-group">
+      <label for="pwd">PRODUCT NAME:</label>
+      <input type="text" class="form-control" id="procname" placeholder="Product name" name="email">
+    </div>
+    <div class="form-group">
+        <label for="pwd">MANUAFACTURAL NAME:</label><br/>
+        <select class="form-control" id="Manufacturer_Select_id" placeholder="Manufactural name" >
+            <option value = "Apple">Apple</option>
+            <option value = "Dell">Dell</option>
+            <option value = "Sam Sung">Sam Sung</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="pwd">CATEGORY NAME:</label>
+        <input type="text" class="form-control" id="proccate" placeholder="Category name" name="pwd">
+      </div>
+      <div class="form-group">
+        <label for="pwd">PRICE</label>
+        <input type="number" class="form-control" id="procprice" placeholder="Price" name="pwd">
+      </div>
+      <div class="form-group">
+        <label for="pwd">QUANTITY</label>
+        <input type="text" class="form-control" id="procquan" placeholder="Quantity" name="pwd">
+      </div>
+      <div class="form-group">
+        <label for="pwd">TOTAL PRICE</label>
+        <input type="number" class="form-control" id="proctotal" placeholder="Total price" name="pwd">
+      </div>
+    <button type="button" class="btn btn-danger navbar-btn" onclick="addtocart()">Submit</button>
+    <button type="reset" class="btn btn-default">Reset</button>
+    </div>
+  </form>
+  <div class="wrapper" style="margin-top: 50px; ">
+    <head class=""><h2>PRODUCT CART</h2></head>
+    <section>
+    <table class="table-cart table table-hover" id="tr_table" >
+        <thead>
+        <tr>
+            <th>No</th>
+            <th>Product Name</th>
+            <th>Manufacturer Name</th>
+            <th>Category Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Quantity</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        <tr ></tr>
+    </thead>
+    </table>           
+    </section>
+  </div>
+</div>
+<script type="text/javascript" src="script/form.js"></script>
+</body>
+</html>
