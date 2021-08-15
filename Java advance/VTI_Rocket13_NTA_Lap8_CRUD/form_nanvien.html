@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>EMPLOYEE</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/fontawesome.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>EMPLOYEE INFORMATION</h2>
+
+        </br>
+        <div class="row">
+            <div class="input-group">
+                <input type="search" class="form-control rounded" id="input-searchdepartment" placeholder="Department"
+                    aria-label="Search" />
+                <button type="button" class="btn btn-outlineprimary" onclick="handleSearch()">search</button>
+            </div>
+        </div>
+        <br>
+
+        <form onload="DataIntoDropList()" style="border-radius: 5px; background-color: rgb(209, 205, 205); "
+            method="POST" id="main_form_id">
+            <div style="padding: 25px;">
+                <div class="form-group">
+                    <label for="pwd">ID:</label>
+                    <input type="text" class="form-control" id="emid" placeholder="Id" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">EMAIL:</label>
+                    <input type="email" class="form-control" id="ememail" placeholder="Email" name="pwd">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">USERNAME:</label>
+                    <input type="text" class="form-control" id="emusername" placeholder="Username" name="pwd">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">FULLNAME:</label>
+                    <input type="text" class="form-control" id="emfullname" placeholder="Fullname" name="pwd">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">SELECT A DEPARTMENT:</label><br />
+                    <select class="form-control" id="department_Select_id">
+                        <option value="">-- Select Option Here --</option>
+                        <!-- <option value="Dell">Dell</option>
+                        <option value="Sam Sung">Sam Sung</option> -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pwd">SELECT A POSITION:</label><br />
+                    <select class="form-control" id="position_Select_id">
+                        <option value="">-- Select Option Here --</option>
+                        <!--<option value="Dell">Dell</option>
+                        <option value="Sam Sung">Sam Sung</option> -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pwd">CREATE DATE:</label>
+                    <input type="date" class="form-control" id="emdate" placeholder="Create date" name="pwd">
+                </div>
+                <button type="submit" id="Main_Form_ID" class="btn btn-danger navbar-btn">Submit</button>
+                <button type="button" id="Main_Form_Update" class="btn navbar-btn"
+                    style="border-color: #d9534f; background-color: #fff;">Update</button>
+                <button type="reset" class="btn navbar-btn"
+                    style="border-color: #d9534f; background-color: #fff;">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="wrapper" style="margin-top: 50px; ">
+
+        <head class="">
+            <h2>EMPLOYEE LIST</h2>
+        </head>
+        <section>
+            <table class="table-cart table table-hover" id="tr_table">
+                <thead>
+                    <tr>
+                        <th>ID
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>EMAIL
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>USER Name
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>FULL Name
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>DEPARTMENT
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>POSITION
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>CREATE DATE
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>Edit
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                        <th>Delete
+                            <i class="fa fa-fw fa-sort" onclick="changeSort('id')"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tbody_tb">
+
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination" id="pagination">
+                    <!-- <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li> -->
+                </ul>
+            </nav>
+        </section>
+    </div>
+    <script type="text/javascript" src="script/Inform_Nhanvien.js"></script>
+</body>
+
+</html>
